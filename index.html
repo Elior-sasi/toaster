@@ -300,7 +300,7 @@ function readStatus(st){
 function setConn(){
   const p=$('conn');p.classList.toggle('ok',linked&&!!DEV&&online);p.classList.toggle('bad',linked&&(!online||!DEV));
   $('connTxt').textContent=!linked?'מצב הדגמה':!DEV?'בחר תקע':online?'מחובר':'התקע לא מחובר';
-  $('subline').textContent=DEV?(DEV.name||'תקע חכם'):'תקע חכם';
+  $('subline').textContent=DEV&&DEV.name&&DEV.name.trim()!=='טוסטר'?DEV.name:'תקע חכם';
   $('fDev').hidden=$('fOut').hidden=!linked;
 }
 async function loadDevices(pick){
