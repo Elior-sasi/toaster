@@ -185,6 +185,56 @@ body{background:radial-gradient(110% 55% at 50% -8%,var(--accent-soft),transpare
 .bar i{background:var(--accent)}
 .bar.today small{color:var(--accent)}
 .btn.pri{background:var(--accent)}
+
+/* ---- toaster hero ---- */
+.hero{display:flex;flex-direction:column;align-items:center;gap:6px;padding-block:6px 0}
+.toaster{width:min(100%,340px);height:auto;display:block;overflow:visible}
+.floor{fill:#000;opacity:.45}
+.panel{fill:#0d1116;stroke:#5d6773;stroke-width:1.5}
+.digits{font-family:var(--f-num);font-weight:300;font-size:38px;fill:#6b5a4a;font-variant-numeric:tabular-nums;letter-spacing:1px;transition:fill .4s}
+.app.is-on .digits{fill:#ffb36b}
+.vent{fill:#1a1310;stroke:#5d6773;stroke-width:1.5}
+.coil{fill:none;stroke:#4a3a33;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;transition:stroke .5s}
+.heatglow{opacity:0;transition:opacity .6s}
+.app.is-on .coil{stroke:#ff6a2a;animation:coil 1.8s ease-in-out infinite}
+.app.is-on .heatglow{opacity:1;animation:coil 1.8s ease-in-out infinite}
+@keyframes coil{50%{opacity:.6}}
+.leverslot{fill:#2a3038}
+.leverknob{fill:#2c333c;stroke:#9aa6b4;stroke-width:1.5}
+.lever{transition:transform .45s cubic-bezier(.5,0,.3,1)}
+.app.is-on .lever{transform:translateY(68px)}
+.breads{transition:transform .5s cubic-bezier(.5,0,.3,1)}
+.app.is-on .breads{transform:translateY(46px)}
+.breads.pop{animation:pop .9s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{0%{transform:translateY(46px)}35%{transform:translateY(-34px)}62%{transform:translateY(4px)}80%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+.crust{fill:var(--crust,#d9a565);transition:fill 1s linear}
+.crumb{fill:var(--crumb,#f6e2b8);transition:fill 1s linear}
+.status{text-align:center;display:flex;flex-direction:column;gap:2px;min-height:40px}
+.status .state{font-size:17px;font-weight:700;color:var(--fg)}
+.app.is-on .status .state{color:#ffb36b}
+.status .hint{font-size:13px;color:var(--muted)}
+
+/* ---- shade picker ---- */
+.shades{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.shade{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px 8px;border-radius:16px;background:var(--surface);border:1px solid var(--line);transition:border-color .2s,background .2s}
+.shade svg{width:34px;height:38px}
+.shade .sw{stroke:rgba(0,0,0,.25);stroke-width:1}
+.shade b{font-family:var(--f-num);font-weight:300;font-size:16px;font-variant-numeric:tabular-nums}
+.shade span{font-size:11.5px;color:var(--muted)}
+.shade[aria-pressed="true"]{border-color:#e8a84a;background:rgba(232,168,74,.12)}
+.shade[aria-pressed="true"] span{color:#f0c27a}
+.shade.custom svg{opacity:.8}
+
+/* ---- slice stacks ---- */
+.bars{height:auto;min-height:110px;align-items:end;padding:12px 10px 0}
+.bar{justify-content:flex-end;gap:2px}
+.stack{display:flex;flex-direction:column-reverse;align-items:center;gap:2px}
+.stack svg{width:18px;height:16px;display:block}
+.stack .more{font-size:10px;color:var(--muted);font-family:var(--f-num)}
+.stack .none{width:16px;height:3px;border-radius:2px;background:var(--line)}
+.bar small{padding-block:4px 8px}
+.bar.today small{color:#f0c27a;font-weight:700}
+@media (prefers-reduced-motion:reduce){.breads.pop{animation:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -197,23 +247,44 @@ body{background:radial-gradient(110% 55% at 50% -8%,var(--accent-soft),transpare
     <button class="pill" id="conn"><span class="dot"></span><span id="connTxt">מצב הדגמה</span></button>
   </header>
 
-  <section class="hero">
-    <div class="glow"></div>
-    <div class="ring">
-      <svg viewBox="0 0 300 300" aria-hidden="true">
-        <g id="ticks"></g>
-        <circle class="track" cx="150" cy="150" r="118"></circle><circle class="ghost" cx="150" cy="150" r="118"></circle>
-        <circle class="val" id="val" cx="150" cy="150" r="118" transform="rotate(-90 150 150)"></circle>
-      </svg>
-      <div class="center">
-        <svg class="icon" viewBox="0 0 52 44" aria-hidden="true">
-          <path d="M14 18V9a5 5 0 0 1 10 0v9"/><path d="M28 18V9a5 5 0 0 1 10 0v9"/>
-          <rect x="4" y="18" width="44" height="22" rx="7"/><path class="heat" d="M14 30h24"/>
-        </svg>
-        <div class="time" id="time">3:00</div>
-        <div class="state" id="state">כבוי</div>
-        <div class="hint" id="hint">בחר זמן והדלק</div>
-      </div>
+  <section class="hero" id="hero">
+    <svg class="toaster" viewBox="0 0 320 250" role="img" aria-label="הטוסטר">
+      <defs>
+        <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#eef2f6"/><stop offset=".18" stop-color="#c3ccd6"/>
+          <stop offset=".52" stop-color="#8d98a6"/><stop offset=".56" stop-color="#d7dee6"/>
+          <stop offset="1" stop-color="#7d8896"/>
+        </linearGradient>
+        <linearGradient id="chromeSide" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".12" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".88" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/>
+        </linearGradient>
+        <radialGradient id="heatGlow" cx=".5" cy=".5" r=".6">
+          <stop offset="0" stop-color="#ff7a2e" stop-opacity=".9"/><stop offset="1" stop-color="#ff3d1f" stop-opacity="0"/>
+        </radialGradient>
+        <path id="slice" d="M0 120V34C-14 26-12 0 16 0h54c28 0 30 26 16 34v86Z"/>
+        <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+      </defs>
+      <ellipse cx="160" cy="236" rx="128" ry="9" class="floor"/>
+      <g class="breads" id="breads">
+        <g transform="translate(60 30)"><use href="#slice" class="crust"/><use href="#slice" class="crumb" transform="translate(7 7) scale(.84)"/></g>
+        <g transform="translate(174 30)"><use href="#slice" class="crust"/><use href="#slice" class="crumb" transform="translate(7 7) scale(.84)"/></g>
+      </g>
+      <rect x="40" y="86" width="240" height="140" rx="40" fill="url(#chrome)"/>
+      <rect x="40" y="86" width="240" height="140" rx="40" fill="url(#chromeSide)"/>
+      <path d="M62 92h196" stroke="#fff" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/>
+      <rect x="76" y="104" width="168" height="56" rx="16" class="panel"/>
+      <text x="160" y="143" text-anchor="middle" class="digits" id="time">3:00</text>
+      <rect x="92" y="174" width="136" height="30" rx="12" class="vent"/>
+      <ellipse cx="160" cy="189" rx="70" ry="22" fill="url(#heatGlow)" class="heatglow" filter="url(#soft)"/>
+      <path class="coil" d="M104 189l8-8 8 16 8-16 8 16 8-16 8 16 8-16 8 16 8-16 8 16 8-16 8 8"/>
+      <rect x="284" y="112" width="10" height="84" rx="5" class="leverslot"/>
+      <g class="lever" id="lever"><rect x="276" y="108" width="34" height="16" rx="8" class="leverknob"/></g>
+      <rect x="66" y="222" width="34" height="10" rx="4" class="foot"/><rect x="220" y="222" width="34" height="10" rx="4" class="foot"/>
+    </svg>
+    <div class="status">
+      <div class="state" id="state">מוכן לקלייה</div>
+      <div class="hint" id="hint">בחר גוון והדלק</div>
     </div>
   </section>
 
@@ -226,8 +297,8 @@ body{background:radial-gradient(110% 55% at 50% -8%,var(--accent-soft),transpare
   </div>
 
   <section class="sec">
-    <h2>כיבוי אוטומטי</h2>
-    <div class="seg" id="times"></div>
+    <h2>כמה שחום?</h2>
+    <div class="shades" id="times"></div>
   </section>
 
   <section class="sec">
@@ -274,8 +345,15 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const LS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const LSset=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
 const CIRC=2*Math.PI*118;
-$('val').style.strokeDasharray=CIRC;
+
 const TIMES=[2,3,4,5];
+const SHADE_NAME={2:'בהיר',3:'זהוב',4:'שחום',5:'כהה'};
+const TOAST=[[246,226,184],[236,196,128],[214,150,70],[160,92,36],[92,48,20]];
+const mix=(c1,c2,t)=>c1.map((v,i)=>Math.round(v+(c2[i]-v)*t));
+function shadeAt(d){d=Math.max(0,Math.min(1,d))*(TOAST.length-1);const i=Math.min(TOAST.length-2,Math.floor(d));return mix(TOAST[i],TOAST[i+1],d-i)}
+const rgb=a=>`rgb(${a})`;
+const doneness=m=>Math.max(.12,Math.min(1,(m-1)/4.6));
+const SLICE='<path d="M3 15V6C1 5 1 1 5 1h8c4 0 4 4 2 5v9Z"/>';
 const ICONS={
   bread:'<path d="M6 21V11C3.5 9.5 4 4 9 4h6c5 0 5.5 5.5 3 7v10Z"/>',
   bagel:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
@@ -418,6 +496,7 @@ async function send(cmds){
 const live=()=>linked&&DEV&&CAP;
 
 async function turnOn(name){
+  R.justDone=false;
   const sec=S.min*60;
   if(live()&&!(await send(onCmds(sec))))return;
   R.on=true;R.total=sec;R.endAt=Date.now()+sec*1000;
@@ -438,6 +517,8 @@ async function extend(){
 }
 function finished(fromPlug){
   if(!R.on&&fromPlug==='dup')return;
+  R.justDone=true;clearTimeout(R.jd);R.jd=setTimeout(()=>{R.justDone=false;render()},60000);
+  const br=$('breads');br.classList.remove('pop');void br.getBBox();br.classList.add('pop');setTimeout(()=>br.classList.remove('pop'),1000);
   R.on=false;R.endAt=0;render();buzz([120,80,120]);beep();clearBadge();
   if(S.notify)showDone();else toast('הזמן נגמר - החשמל נותק');
 }
@@ -529,8 +610,6 @@ function openNotify(){
 /* ---------- ui ---------- */
 const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const fmtMin=m=>m%1?(Math.floor(m)+':30'):String(m);
-$('ticks').innerHTML=Array.from({length:60},(_,i)=>{const a=(i*6-90)*Math.PI/180,r1=i%5?96:92,r2=100;
-  return`<line class="tick" x1="${150+r1*Math.cos(a)}" y1="${150+r1*Math.sin(a)}" x2="${150+r2*Math.cos(a)}" y2="${150+r2*Math.sin(a)}"/>`}).join('');
 
 $('power').onclick=()=>{buzz();unlockAudio();R.on?turnOff('הטוסטר כובה'):(lastName='',turnOn())};
 $('ext').onclick=()=>{buzz();extend()};
@@ -630,14 +709,18 @@ function renderStats(){
   $('stFav').textContent=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'-';
   const DN=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
   const days=Array.from({length:7},(_,i)=>{const s=weekStart+i*DAY;return{l:DN[i],t:s===today,f:s>today,c:S.log.filter(x=>x.t>=s&&x.t<s+DAY).length}});
-  const max=Math.max(1,...days.map(d=>d.c));
-  $('bars').innerHTML=days.map(d=>`<div class="bar${d.t?' today':''}${d.f?' future':''}"><i class="${d.c?'':'zero'}" style="height:${d.c?Math.round(d.c/max*48):3}px"></i><small>${d.l}</small></div>`).join('');
+  const piece=i=>`<svg viewBox="0 0 18 16" aria-hidden="true" fill="${rgb(shadeAt(.25+((i*37)%5)/10))}">${SLICE}</svg>`;
+  $('bars').innerHTML=days.map(d=>`<div class="bar${d.t?' today':''}${d.f?' future':''}"><div class="stack">${d.c?Array.from({length:Math.min(d.c,5)},(_,i)=>piece(i)).join('')+(d.c>5?`<span class="more">+${d.c-5}</span>`:''):'<span class="none"></span>'}</div><small>${d.l}</small></div>`).join('');
 }
 function drawClock(){
   const timed=R.on&&R.endAt;
   const left=timed?R.endAt-Date.now():(R.on?0:S.min*60000);
   $('time').textContent=R.on&&!timed?'--:--':fmt(left);
-  $('val').style.strokeDashoffset=timed?CIRC*(1-left/(R.total*1000)):(R.on?0:0);
+  const target=doneness(R.on?R.total/60:S.min);
+  const prog=timed?Math.max(0,Math.min(1,1-left/(R.total*1000))):(R.on?.5:1);
+  const d=R.on?target*prog:(R.justDone?target:target);
+  const crumb=shadeAt(R.on?d*.9:(R.justDone?target*.9:.02)),crust=shadeAt(Math.min(1,(R.on||R.justDone?d:.08)+.28));
+  const h=$('hero');h.style.setProperty('--crumb',rgb(crumb));h.style.setProperty('--crust',rgb(crust));
 }
 function setAccent(){
   const p=S.prof>=0?S.profiles[S.prof]:null,c=(p&&HUE[p.ic])||'#ff9a52';
@@ -649,13 +732,14 @@ function render(){
   setAccent();
   $('app').classList.toggle('is-on',R.on);
   drawClock();
-  $('state').textContent=R.on?'דולק':'כבוי';
-  $('hint').textContent=R.on?(R.endAt?'כיבוי אוטומטי בסוף הספירה':'אין טיימר פעיל'):'בחר זמן והדלק';
+  $('state').textContent=R.on?'קולה...':R.justDone?'הטוסט מוכן':'מוכן לקלייה';
+  $('hint').textContent=R.on?(R.endAt?'לחץ את הידית למטה. החשמל ינותק בסוף':'אין טיימר פעיל'):R.justDone?'אפשר להוציא':'בחר גוון והדלק';
   $('power').setAttribute('aria-pressed',R.on);$('powerTxt').textContent=R.on?'כבה עכשיו':'הדלק';
   $('ext').hidden=!R.on||!R.endAt;
   const isCustom=!TIMES.includes(S.min)&&S.prof<0;
-  $('times').innerHTML=TIMES.map(m=>`<button data-m="${m}" aria-pressed="${S.min===m&&S.prof<0}"><b>${m}</b><span>דק׳</span></button>`).join('')+
-    `<button data-m="custom" aria-pressed="${isCustom}">${isCustom?`<b>${fmtMin(S.min)}</b><span>דק׳</span>`:svg('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>')+'<span>אחר</span>'}</button>`;
+  const sw=(m,dash)=>{const c=shadeAt(doneness(m));return `<svg viewBox="0 0 36 40" aria-hidden="true"><path class="${dash?'swd':'sw'}" d="M5 38V13C1 10 2 2 10 2h16c8 0 9 8 5 11v25Z" fill="${dash?'none':rgb(shadeAt(Math.min(1,doneness(m)+.28)))}" ${dash?'stroke="#8392a6" stroke-dasharray="3 3" stroke-width="1.5"':''}/>${dash?'':`<path d="M9 35V15C6 13 7 6 12 6h12c5 0 6 7 3 9v20Z" fill="${rgb(mix(c,[255,240,210],.18))}"/>`}</svg>`};
+  $('times').innerHTML=TIMES.map(m=>`<button class="shade" data-m="${m}" aria-pressed="${S.min===m&&S.prof<0}">${sw(m)}<b>${m}′</b><span>${SHADE_NAME[m]}</span></button>`).join('')+
+    `<button class="shade custom" data-m="custom" aria-pressed="${isCustom}">${isCustom?sw(S.min):sw(3,true)}<b>${isCustom?fmtMin(S.min)+'′':'...'}</b><span>אחר</span></button>`;
   $('profiles').innerHTML=S.profiles.map((p,i)=>`<button class="prof" data-p="${i}" style="--h:${HUE[p.ic]||HUE.star}" aria-pressed="${R.on&&i===S.prof}"><span class="chip">${svg(ICONS[p.ic]||ICONS.star)}</span><div><b>${esc(p.n)}</b><span>${fmtMin(p.m)} דק׳</span></div></button>`).join('');
   $('tNotify').setAttribute('aria-pressed',S.notify);$('sNotify').textContent=!S.notify?'מושתק':(S.push&&pushOK()&&Notification.permission==='granted')?'צליל, רטט וסימן':'רק באפליקציה';
   $('sSiri').textContent=S.profiles[S.siri]?'"טוסט" - '+S.profiles[S.siri].n:'לא הוגדר';
