@@ -504,7 +504,7 @@ function openNotify(){
     el.querySelector('#nTest')&&(el.querySelector('#nTest').onclick=async()=>{try{await api('/push/test');toast('נשלחה התראת בדיקה')}catch(e){toast(netMsg(e))}});
     el.querySelector('#nOn')&&(el.querySelector('#nOn').onclick=async()=>{const b=el.querySelector('#nOn');b.disabled=true;b.textContent='רגע...';
       try{await subscribePush();S.notify=true;save();render();close();toast('ההתראות פעילות');beep()}
-      catch(e){el.querySelector('#nErr').textContent=netMsg(e);b.disabled=false;b.textContent='הפעל התראות'}});
+      catch(e){el.querySelector('#nErr').textContent=/נתיב לא מוכר|הותקנו/.test(e.message)?'ההתראות לטלפון יעבדו אחרי עדכון השרת. בינתיים יש צפצוף כשהאפליקציה פתוחה, וצלצול דרך קיצור Siri.':netMsg(e);b.disabled=false;b.textContent='הפעל התראות'}});
   });
 }
 
@@ -578,10 +578,10 @@ async function openSiri(){
     <div class="phrase">"היי סירי, טוסט"</div>
     <p>בחר איזה פרופיל הפקודה תפעיל:</p>
     <div class="opts" id="sopts">${S.profiles.map((p,i)=>`<button class="opt" data-i="${i}" aria-pressed="${i===S.siri}"><span>${esc(p.n)}</span><span>${fmtMin(p.m)} דק׳</span></button>`).join('')}</div>
-    <ol><li>העתק את הקישור</li><li>באפליקציית <b>קיצורים</b>: <b>+ ← הוסף פעולה ← קבל תוכן של URL</b>, והדבק</li><li>קרא לקיצור <b>טוסט</b></li></ol>
+    <ol><li>העתק את הקישור</li><li>באפליקציית <b>קיצורים</b>: <b>+ ← הוסף פעולה ← קבל תוכן של URL</b>, והדבק</li><li>הוסף פעולה <b>התחל טיימר</b> ל-<b id="smin"></b> דקות. השעון יצלצל כשהטוסט מוכן, גם כשהטלפון נעול</li><li>קרא לקיצור <b>טוסט</b></li></ol>
     <div class="url" id="surl"></div>
     <div class="row"><button class="btn" id="sx">סגור</button><button class="btn pri" id="scp">העתק קישור</button></div>`,(sc,close)=>{
-    const upd=()=>{sc.querySelector('#surl').textContent=urlFor(S.profiles[S.siri]||S.profiles[0])};upd();
+    const upd=()=>{const p=S.profiles[S.siri]||S.profiles[0];sc.querySelector('#surl').textContent=urlFor(p);sc.querySelector('#smin').textContent=fmtMin(p.m)};upd();
     sc.querySelector('#sopts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;buzz();S.siri=+b.dataset.i;save();render();
       sc.querySelectorAll('.opt').forEach(o=>o.setAttribute('aria-pressed',o===b));upd()};
     sc.querySelector('#sx').onclick=close;
