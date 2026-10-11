@@ -152,15 +152,53 @@ input[type=range]{width:100%;accent-color:var(--accent);height:28px}
 .done p{margin:0;color:var(--muted);font-size:14px}
 .done .row{width:100%;margin-top:8px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:13.5px;z-index:40;white-space:nowrap}
+
+/* ---- color pass ---- */
+:root{--hot:linear-gradient(135deg,#ffd166,#ff8a3d 55%,#ff4d4d);--warm-bg:#1a1210}
+body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,138,61,.16),transparent 60%),radial-gradient(90% 50% at 100% 100%,rgba(255,77,77,.07),transparent 60%),var(--bg);background-attachment:fixed}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:12px;background:var(--hot);display:grid;place-items:center;box-shadow:0 6px 18px rgba(255,120,60,.35)}
+.logo svg{width:24px;height:20px}
+.logo svg *{fill:none;stroke:#2a1205;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.top h1{font-size:22px}
+.track{stroke:#1d1714}
+.ghost{stroke:url(#hot);stroke-width:14;fill:none;opacity:.22;transition:opacity .4s}
+.app.is-on .ghost{opacity:.12}
+.val{stroke:url(#hot)}
+.app:not(.is-on) .val{stroke:url(#hot);opacity:0}
+.glow{background:radial-gradient(circle,rgba(255,138,61,.28),rgba(255,77,77,.08) 45%,transparent 70%)}
+.app:not(.is-on) .glow{opacity:.35}
+.icon *{stroke:#ff9a52}
+.app:not(.is-on) .icon *{stroke:#a76a45}
+.app:not(.is-on) .time{color:var(--fg);opacity:.92}
+.app:not(.is-on) .state{color:#c98a5e}
+.app.is-on .time{background:var(--hot);-webkit-background-clip:text;background-clip:text;color:transparent}
+.power{background:linear-gradient(135deg,rgba(255,209,102,.14),rgba(255,77,77,.12));border:1px solid rgba(255,138,61,.45);color:#ffd2b0}
+.app.is-on .power{background:var(--hot);color:#2a1205;box-shadow:0 10px 28px rgba(255,100,60,.35)}
+.ext{background:rgba(255,138,61,.12)}
+.seg button[aria-pressed="true"]{background:var(--hot);color:#2a1205;box-shadow:0 4px 14px rgba(255,120,60,.3)}
+.prof{background:linear-gradient(135deg,color-mix(in srgb,var(--h) 16%,transparent),var(--surface-2) 70%);border-color:color-mix(in srgb,var(--h) 30%,var(--line))}
+.prof .chip{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--h) 22%,transparent);flex:none}
+.prof .chip svg{width:22px;height:22px;color:var(--h)}
+.prof span{color:color-mix(in srgb,var(--h) 70%,var(--muted))}
+.prof .chip+div span{color:color-mix(in srgb,var(--h) 60%,var(--muted))}
+.prof[aria-pressed="true"]{border-color:var(--h);background:color-mix(in srgb,var(--h) 22%,var(--surface-2))}
+#tNotify{--h:#ffcf5c} #tSiri{--h:#c79bff}
+.tog svg{color:var(--h)}
+.tog[aria-pressed="true"]{border-color:var(--h);background:color-mix(in srgb,var(--h) 14%,var(--surface))}
+.tog[aria-pressed="true"] svg,.tog[aria-pressed="true"] .s{color:var(--h)}
+.stat b{background:var(--hot);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat b.word{color:#ffb98a;background:none}
+.bar i{background:linear-gradient(to top,#ff4d4d,#ffd166);opacity:1}
+.btn.pri{background:var(--hot);color:#2a1205}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="app" id="app">
   <header class="top">
-    <div>
+    <div class="brand"><span class="logo"><svg viewBox="0 0 52 44" aria-hidden="true"><path d="M14 18V9a5 5 0 0 1 10 0v9"/><path d="M28 18V9a5 5 0 0 1 10 0v9"/><rect x="4" y="18" width="44" height="22" rx="7"/><path d="M14 30h24"/></svg></span>
       <h1>טוסטר</h1>
-      <div class="sub" id="subline">תקע חכם</div>
     </div>
     <button class="pill" id="conn"><span class="dot"></span><span id="connTxt">מצב הדגמה</span></button>
   </header>
@@ -169,8 +207,8 @@ input[type=range]{width:100%;accent-color:var(--accent);height:28px}
     <div class="glow"></div>
     <div class="ring">
       <svg viewBox="0 0 300 300" aria-hidden="true">
-        <g id="ticks"></g>
-        <circle class="track" cx="150" cy="150" r="118"></circle>
+        <defs><linearGradient id="hot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset=".55" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff4d4d"/></linearGradient></defs><g id="ticks"></g>
+        <circle class="track" cx="150" cy="150" r="118"></circle><circle class="ghost" cx="150" cy="150" r="118"></circle>
         <circle class="val" id="val" cx="150" cy="150" r="118" transform="rotate(-90 150 150)"></circle>
       </svg>
       <div class="center">
@@ -252,6 +290,7 @@ const ICONS={
   star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/>'
 };
 const DEF_PROFILES=[{n:'טוסט רגיל',m:3,ic:'bread'},{n:'בייגל',m:4,ic:'bagel'},{n:'לחם קפוא',m:5,ic:'frozen'},{n:'חימום קל',m:2,ic:'warm'}];
+const HUE={bread:'#ffb347',bagel:'#e8925a',frozen:'#6cc8ff',warm:'#ff6f7d',star:'#c79bff'};
 const DAY=86400000;
 
 /* ---------- state ---------- */
@@ -300,7 +339,7 @@ function readStatus(st){
 function setConn(){
   const p=$('conn');p.classList.toggle('ok',linked&&!!DEV&&online);p.classList.toggle('bad',linked&&(!online||!DEV));
   $('connTxt').textContent=!linked?'מצב הדגמה':!DEV?'בחר תקע':online?'מחובר':'התקע לא מחובר';
-  $('subline').textContent=DEV&&DEV.name&&DEV.name.trim()!=='טוסטר'?DEV.name:'תקע חכם';
+  
   $('fDev').hidden=$('fOut').hidden=!linked;
 }
 async function loadDevices(pick){
@@ -528,7 +567,7 @@ function render(){
   const isCustom=!TIMES.includes(S.min)&&S.prof<0;
   $('times').innerHTML=TIMES.map(m=>`<button data-m="${m}" aria-pressed="${S.min===m&&S.prof<0}"><b>${m}</b><span>דק׳</span></button>`).join('')+
     `<button data-m="custom" aria-pressed="${isCustom}">${isCustom?`<b>${fmtMin(S.min)}</b><span>דק׳</span>`:svg('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>')+'<span>אחר</span>'}</button>`;
-  $('profiles').innerHTML=S.profiles.map((p,i)=>`<button class="prof" data-p="${i}" aria-pressed="${R.on&&i===S.prof}">${svg(ICONS[p.ic]||ICONS.star)}<div><b>${esc(p.n)}</b><span>${fmtMin(p.m)} דק׳</span></div></button>`).join('');
+  $('profiles').innerHTML=S.profiles.map((p,i)=>`<button class="prof" data-p="${i}" style="--h:${HUE[p.ic]||HUE.star}" aria-pressed="${R.on&&i===S.prof}"><span class="chip">${svg(ICONS[p.ic]||ICONS.star)}</span><div><b>${esc(p.n)}</b><span>${fmtMin(p.m)} דק׳</span></div></button>`).join('');
   $('tNotify').setAttribute('aria-pressed',S.notify);$('sNotify').textContent=S.notify?'פעיל':'כבוי';
   $('sSiri').textContent=S.profiles[S.siri]?'"טוסט" - '+S.profiles[S.siri].n:'לא הוגדר';
   renderStats();
