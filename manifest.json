@@ -1,0 +1,12 @@
+{
+  "name": "טוסטר",
+  "short_name": "טוסטר",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/toaster/",
+  "scope": "/toaster/",
+  "display": "standalone",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "icons": [{ "src": "/toaster/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }]
+}
