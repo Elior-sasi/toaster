@@ -153,44 +153,38 @@ input[type=range]{width:100%;accent-color:var(--accent);height:28px}
 .done .row{width:100%;margin-top:8px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:13.5px;z-index:40;white-space:nowrap}
 
-/* ---- color pass ---- */
-:root{--hot:linear-gradient(135deg,#ffd166,#ff8a3d 55%,#ff4d4d);--warm-bg:#1a1210}
-body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,138,61,.16),transparent 60%),radial-gradient(90% 50% at 100% 100%,rgba(255,77,77,.07),transparent 60%),var(--bg);background-attachment:fixed}
+/* ---- color: accent follows the active profile, like the AC app follows its mode ---- */
+:root{--accent:#ff9a52;--accent-soft:rgba(255,154,82,.15)}
+body{background:radial-gradient(110% 55% at 50% -8%,var(--accent-soft),transparent 62%),var(--bg);background-attachment:fixed;transition:background .5s}
 .brand{display:flex;align-items:center;gap:10px}
-.logo{width:38px;height:38px;border-radius:12px;background:var(--hot);display:grid;place-items:center;box-shadow:0 6px 18px rgba(255,120,60,.35)}
+.logo{width:38px;height:38px;border-radius:12px;background:var(--accent);display:grid;place-items:center;transition:background .5s}
 .logo svg{width:24px;height:20px}
-.logo svg *{fill:none;stroke:#2a1205;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-.top h1{font-size:22px}
-.track{stroke:#1d1714}
-.ghost{stroke:url(#hot);stroke-width:14;fill:none;opacity:.22;transition:opacity .4s}
-.app.is-on .ghost{opacity:.12}
-.val{stroke:url(#hot)}
-.app:not(.is-on) .val{stroke:url(#hot);opacity:0}
-.glow{background:radial-gradient(circle,rgba(255,138,61,.28),rgba(255,77,77,.08) 45%,transparent 70%)}
-.app:not(.is-on) .glow{opacity:.35}
-.icon *{stroke:#ff9a52}
-.app:not(.is-on) .icon *{stroke:#a76a45}
-.app:not(.is-on) .time{color:var(--fg);opacity:.92}
-.app:not(.is-on) .state{color:#c98a5e}
-.app.is-on .time{background:var(--hot);-webkit-background-clip:text;background-clip:text;color:transparent}
-.power{background:linear-gradient(135deg,rgba(255,209,102,.14),rgba(255,77,77,.12));border:1px solid rgba(255,138,61,.45);color:#ffd2b0}
-.app.is-on .power{background:var(--hot);color:#2a1205;box-shadow:0 10px 28px rgba(255,100,60,.35)}
-.ext{background:rgba(255,138,61,.12)}
-.seg button[aria-pressed="true"]{background:var(--hot);color:#2a1205;box-shadow:0 4px 14px rgba(255,120,60,.3)}
-.prof{background:linear-gradient(135deg,color-mix(in srgb,var(--h) 16%,transparent),var(--surface-2) 70%);border-color:color-mix(in srgb,var(--h) 30%,var(--line))}
-.prof .chip{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--h) 22%,transparent);flex:none}
+.logo svg *{fill:none;stroke:#1a0d04;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.ghost{stroke:var(--accent);stroke-width:14;fill:none;opacity:.18;transition:opacity .4s,stroke .5s}
+.app.is-on .ghost{opacity:0}
+.val{stroke:var(--accent)}
+.glow{background:radial-gradient(circle,var(--accent-soft),transparent 68%);transition:background .5s,opacity .5s}
+.app:not(.is-on) .glow{opacity:.6}
+.icon *{stroke:var(--accent)!important}
+.app:not(.is-on) .icon{opacity:.55}
+.app:not(.is-on) .time{color:var(--fg)}
+.app:not(.is-on) .state{color:var(--muted)}
+.power{border-color:var(--accent);color:var(--accent)}
+.app.is-on .power{background:var(--accent);color:#06121b}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.prof .chip{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--h) 18%,transparent);flex:none}
 .prof .chip svg{width:22px;height:22px;color:var(--h)}
-.prof span{color:color-mix(in srgb,var(--h) 70%,var(--muted))}
-.prof .chip+div span{color:color-mix(in srgb,var(--h) 60%,var(--muted))}
-.prof[aria-pressed="true"]{border-color:var(--h);background:color-mix(in srgb,var(--h) 22%,var(--surface-2))}
-#tNotify{--h:#ffcf5c} #tSiri{--h:#c79bff}
+.prof[aria-pressed="true"]{border-color:var(--h);background:color-mix(in srgb,var(--h) 15%,var(--surface-2))}
+.prof[aria-pressed="true"] b{color:var(--h)}
+#tNotify{--h:#ffcf5c} #tSiri{--h:#b7a3ff}
 .tog svg{color:var(--h)}
 .tog[aria-pressed="true"]{border-color:var(--h);background:color-mix(in srgb,var(--h) 14%,var(--surface))}
 .tog[aria-pressed="true"] svg,.tog[aria-pressed="true"] .s{color:var(--h)}
-.stat b{background:var(--hot);-webkit-background-clip:text;background-clip:text;color:transparent}
-.stat b.word{color:#ffb98a;background:none}
-.bar i{background:linear-gradient(to top,#ff4d4d,#ffd166);opacity:1}
-.btn.pri{background:var(--hot);color:#2a1205}
+.stat b{color:var(--accent);transition:color .5s}
+.stat b.word{color:var(--fg)}
+.bar i{background:var(--accent)}
+.bar.today small{color:var(--accent)}
+.btn.pri{background:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -207,7 +201,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,138,61,.16),transp
     <div class="glow"></div>
     <div class="ring">
       <svg viewBox="0 0 300 300" aria-hidden="true">
-        <defs><linearGradient id="hot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset=".55" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff4d4d"/></linearGradient></defs><g id="ticks"></g>
+        <g id="ticks"></g>
         <circle class="track" cx="150" cy="150" r="118"></circle><circle class="ghost" cx="150" cy="150" r="118"></circle>
         <circle class="val" id="val" cx="150" cy="150" r="118" transform="rotate(-90 150 150)"></circle>
       </svg>
@@ -557,7 +551,14 @@ function drawClock(){
   $('time').textContent=R.on&&!timed?'--:--':fmt(left);
   $('val').style.strokeDashoffset=timed?CIRC*(1-left/(R.total*1000)):(R.on?0:0);
 }
+function setAccent(){
+  const p=S.prof>=0?S.profiles[S.prof]:null,c=(p&&HUE[p.ic])||'#ff9a52';
+  const rgb=c.match(/\w\w/g).map(h=>parseInt(h,16));
+  document.documentElement.style.setProperty('--accent',c);
+  document.documentElement.style.setProperty('--accent-soft',`rgba(${rgb},.15)`);
+}
 function render(){
+  setAccent();
   $('app').classList.toggle('is-on',R.on);
   drawClock();
   $('state').textContent=R.on?'דולק':'כבוי';
