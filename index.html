@@ -491,7 +491,7 @@ const ICONS={
   croissant:'<path d="M4 15c1-5 4-8 8-8s7 3 8 8c-2 1-3 0-4-1-1 2-3 3-4 3s-3-1-4-3c-1 1-2 2-4 1Z"/><path d="M10 9l1 6M14 9l-1 6"/>',
   star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/>'
 };
-const DEF_PROFILES=[{n:'טוסט רגיל',m:3,ic:'bread'},{n:'הפשרת פיתה',m:1.5,ic:'pita'},{n:'בייגל',m:4,ic:'bagel'},{n:'לחם קפוא',m:5,ic:'frozen'},{n:'לחמנייה',m:2.5,ic:'roll'},{n:'וופל קפוא',m:3.5,ic:'waffle'},{n:'קרואסון',m:1,ic:'croissant'},{n:'חימום קל',m:2,ic:'warm'}];
+const DEF_PROFILES=[{n:'טוסט רגיל',m:3,ic:'bread'},{n:'פיתה קפואה',m:4,ic:'pita',r:2},{n:'בייגל',m:4,ic:'bagel'},{n:'לחם קפוא',m:5,ic:'frozen'},{n:'לחמנייה',m:2.5,ic:'roll'},{n:'וופל קפוא',m:3.5,ic:'waffle'},{n:'קרואסון',m:1,ic:'croissant'},{n:'חימום קל',m:2,ic:'warm'}];
 const HUE={bread:'#ffb347',pita:'#e9c46a',bagel:'#e8925a',frozen:'#6cc8ff',roll:'#d4a373',waffle:'#f4a261',croissant:'#ffd166',warm:'#ff6f7d',star:'#c79bff'};
 const DAY=86400000;
 
@@ -502,7 +502,8 @@ const save=()=>LSset('toaster_state',JSON.stringify(S));
 if((S.pv||1)<2){const have=new Set(S.profiles.map(p=>p.ic+'|'+p.n));const out=[];
   DEF_PROFILES.forEach(d=>{const ex=S.profiles.find(p=>p.n===d.n);out.push(ex||d)});
   S.profiles.forEach(p=>{if(!out.includes(p))out.push(p)});
-  const cur=S.prof>=0?S.profiles[S.prof]:null;S.profiles=out.slice(0,12);S.prof=cur?S.profiles.indexOf(cur):-1;S.pv=2;save()}
+  const cur=S.prof>=0?S.profiles[S.prof]:null;S.profiles=out.slice(0,12);S.prof=cur?S.profiles.indexOf(cur):-1;S.pv=3;save()}
+if((S.pv||1)<3||!S.pita3){S.profiles.forEach(p=>{if(p.ic==='pita'&&(p.n==='הפשרת פיתה'||p.n==='פיתה קפואה')&&p.m<=1.5){p.n='פיתה קפואה';p.m=4;p.r=2}});S.pv=3;S.pita3=1;save()}
 // live run state (from the plug when connected, simulated in demo)
 const R={on:false,endAt:0,total:S.min*60,busy:false};
 const CFG={key:LS('toaster_key')||LS('kor_key')||'',dev:LS('toaster_dev')||''};
@@ -629,13 +630,13 @@ async function send(cmds){
 }
 const live=()=>linked&&DEV&&CAP;
 
-async function turnOn(name){
-  R.justDone=false;
+async function turnOn(name,rounds){
+  R.justDone=false;R.rounds=rounds||1;R.midDone=false;
   const sec=S.min*60;
   if(live()&&!(await send(onCmds(sec))))return;
   R.on=true;R.total=sec;R.endAt=Date.now()+sec*1000;
   S.log.push({t:Date.now(),n:name||fmtMin(S.min)+' דק׳'});if(S.log.length>2000)S.log=S.log.slice(-2000);
-  save();render();toast('התקע הודלק - לחץ את הידית');
+  save();render();toast(R.rounds>1?'התקע הודלק - לחץ את הידית. באמצע אזכיר ללחוץ שוב':'התקע הודלק - לחץ את הידית');
   armPush(name);
 }
 async function turnOff(msg){
@@ -751,7 +752,7 @@ $('times').onclick=e=>{const b=e.target.closest('button');if(!b)return;buzz();
   S.min=+b.dataset.m;S.prof=-1;save();render()};
 $('profiles').onclick=e=>{const b=e.target.closest('.prof');if(!b)return;buzz();
   const p=S.profiles[b.dataset.p];S.min=p.m;S.prof=+b.dataset.p;save();
-  if(R.on)turnOff().then(()=>turnOn(p.n));else turnOn(p.n)};
+  if(R.on)turnOff().then(()=>turnOn(p.n,p.r));else turnOn(p.n,p.r)};
 $('tNotify').onclick=()=>{buzz();unlockAudio();openNotify()};
 $('tSiri').onclick=()=>{buzz();openSiri()};
 $('editProfiles').onclick=()=>{buzz();openEdit()};
@@ -865,7 +866,7 @@ function render(){
   setAccent();
   $('app').classList.toggle('is-on',R.on);
   drawClock();
-  $('state').textContent=R.on?'קולה...':R.justDone?'הטוסט מוכן':'מוכן לקלייה';
+  $('state').textContent=R.on?(R.rounds>1?(R.midDone?'סיבוב שני':'סיבוב ראשון'):'קולה...'):R.justDone?'הטוסט מוכן':'מוכן לקלייה';
   $('hint').textContent=R.on?(R.endAt?'לחץ את הידית למטה. החשמל ינותק בסוף':'אין טיימר פעיל'):R.justDone?'אפשר להוציא':'בחר שחום והדלק';
   $('power').setAttribute('aria-pressed',R.on);$('powerTxt').textContent=R.on?'כבה עכשיו':'הדלק';
   $('ext').disabled=!R.on||!R.endAt;
@@ -873,7 +874,7 @@ function render(){
   const sw=(m,dash)=>{const c=shadeAt(doneness(m));return `<svg viewBox="0 0 36 40" aria-hidden="true"><path class="${dash?'swd':'sw'}" d="M5 38V13C1 10 2 2 10 2h16c8 0 9 8 5 11v25Z" fill="${dash?'none':rgb(shadeAt(Math.min(1,doneness(m)+.28)))}" ${dash?'stroke="#8392a6" stroke-dasharray="3 3" stroke-width="1.5"':''}/>${dash?'':`<path d="M9 35V15C6 13 7 6 12 6h12c5 0 6 7 3 9v20Z" fill="${rgb(mix(c,[255,240,210],.18))}"/>`}</svg>`};
   $('times').innerHTML=TIMES.map(m=>`<button class="shade" data-m="${m}" aria-pressed="${S.min===m&&S.prof<0}">${sw(m)}<b>${m}′</b><span>${SHADE_NAME[m]}</span></button>`).join('')+
     `<button class="shade custom" data-m="custom" aria-pressed="${isCustom}">${isCustom?sw(S.min):sw(3,true)}<b>${isCustom?fmtMin(S.min)+'′':'...'}</b><span>אחר</span></button>`;
-  $('profiles').innerHTML=S.profiles.map((p,i)=>`<button class="prof" data-p="${i}" style="--h:${HUE[p.ic]||HUE.star}" aria-pressed="${R.on&&i===S.prof}"><span class="chip">${svg(ICONS[p.ic]||ICONS.star)}</span><b>${esc(p.n)}</b><span>${fmtMin(p.m)} דק׳</span></button>`).join('');
+  $('profiles').innerHTML=S.profiles.map((p,i)=>`<button class="prof" data-p="${i}" style="--h:${HUE[p.ic]||HUE.star}" aria-pressed="${R.on&&i===S.prof}"><span class="chip">${svg(ICONS[p.ic]||ICONS.star)}</span><b>${esc(p.n)}</b><span>${fmtMin(p.m)} דק׳${p.r>1?' · 2 סיבובים':''}</span></button>`).join('');
   $('tNotify').setAttribute('aria-pressed',S.notify);$('sNotify').textContent=!S.notify?'מושתק':(S.push&&pushOK()&&Notification.permission==='granted')?'צליל, רטט וסימן':'רק באפליקציה';
   $('sSiri').textContent=S.profiles[S.siri]?'"טוסט" - '+S.profiles[S.siri].n:'לא הוגדר';
   renderStats();
@@ -910,7 +911,10 @@ function openMenu(){
 $('bbShade').onclick=()=>{buzz();openShade()};
 $('bbSound').onclick=()=>{buzz();openSound()};
 $('menuBtn').onclick=()=>{buzz();openMenu()};
-setInterval(()=>{if(R.on&&R.endAt){
+setInterval(()=>{if(R.on&&R.endAt&&R.rounds>1&&!R.midDone&&R.endAt-Date.now()<=R.total*500){
+  R.midDone=true;beep('micro');buzz([150,80,150]);toast('הטוסטר קפץ? לחץ שוב את הידית');
+  $('state').textContent='סיבוב שני';$('hint').textContent='לחץ שוב את הידית למטה'}
+  if(R.on&&R.endAt){
   if(Date.now()>=R.endAt){
     if(!live())finished();
     else if(!CAP.cd)turnOff().then(()=>finished());
